@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>라벤더반 7월</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<style>
+  @font-face {
+    font-family: 'Pretendard';
+    src: url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/woff2/PretendardVariable.woff2') format('woff2-variations');
+    font-weight: 45 920;
+  }
+
+  :root{
+    --lavender: #8B7FD1;
+    --lavender-deep: #6C5CE7;
+    --lavender-pale: #EDE9FB;
+    --aqua: #3FC1B0;
+    --aqua-pale: #DFF6F2;
+    --coral: #FF8B6B;
+    --coral-pale: #FFE9E1;
+    --ink: #2C2A3D;
+    --ink-soft: #74708C;
+    --paper: #FBF9FF;
+    --line: #E6E1F5;
+    --radius: 16px;
+  }
+
+  *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+  html,body{ margin:0; padding:0; }
+
+  body{
+    font-family: 'Pretendard', -apple-system, 'Apple SD Gothic Neo', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+
+  .wrap{ max-width: 480px; margin: 0 auto; padding: 0 16px; }
+
+  /* Header */
+  header{
+    padding: 28px 16px 18px;
+    background: linear-gradient(160deg, var(--lavender) 0%, var(--lavender-deep) 100%);
+    border-radius: 0 0 28px 28px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+  header::after{
+    content:'';
+    display:none;
+  }
+  header::before{
+    content:'';
+    display:none;
+  }
+  .header-inner{ position:relative; z-index:1; max-width:480px; margin:0 auto; padding:0 16px; }
+  .eyebrow{
+    font-size: 12px; font-weight: 600; letter-spacing: 0.06em;
+    opacity: 0.85; text-transform: uppercase;
+  }
+  h1{
+    margin: 4px 0 6px; font-size: 26px; font-weight: 800; line-height:1.2;
+  }
+  .sub{ font-size: 13px; opacity: 0.9; line-height:1.5; }
+
+  /* Prep-ahead banner */
+  .pre-banner{
+    margin: 20px 16px 18px;
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: 0 8px 24px rgba(108,92,231,0.12);
+    padding: 14px 16px;
+    position: relative; z-index: 2;
+  }
+  .pre-banner .title{ font-size:13px; font-weight:700; color: var(--lavender-deep); margin-bottom:8px; display:flex; align-items:center; gap:6px; }
+  .pre-item{ display:flex; justify-content:space-between; font-size:13px; padding:6px 0; border-top:1px solid var(--line); color: var(--ink-soft); }
+  .pre-item:first-of-type{ border-top:none; }
+  .pre-item b{ color: var(--ink); font-weight:600; }
+
+  /* Legend */
+  .legend{
+    display:flex; gap:14px; padding: 4px 16px 14px; font-size:12px; color: var(--ink-soft);
+    flex-wrap: wrap;
+  }
+  .legend span{ display:flex; align-items:center; gap:5px; }
+  .dot{ width:8px; height:8px; border-radius:50%; display:inline-block; }
+  .dot.event{ background: var(--coral); }
+  .dot.story{ background: var(--lavender); }
+  .dot.swim{ background: var(--aqua); }
+
+  /* Calendar */
+  .cal{ padding: 0 16px 8px; }
+  .cal-head{
+    display:flex; justify-content:space-between; align-items:baseline;
+    margin-bottom: 10px;
+  }
+  .cal-head h2{ font-size:16px; font-weight:800; margin:0; }
+  .cal-head span{ font-size:12px; color: var(--ink-soft); }
+
+  .grid{
+    display:grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+  }
+  .dow{
+    text-align:center; font-size:11px; font-weight:700; color: var(--ink-soft);
+    padding-bottom: 4px;
+  }
+  .dow.sun{ color: var(--coral); }
+  .dow.sat{ color: var(--lavender); }
+
+  .cell{
+    aspect-ratio: 1;
+    border-radius: 12px;
+    background: white;
+    border: 1px solid var(--line);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    position: relative;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    transition: transform 0.08s ease;
+  }
+  .cell.empty{ background: transparent; border: none; }
+  .cell.has-event{
+    cursor: pointer;
+    border-color: var(--coral);
+    background: var(--coral-pale);
+  }
+  .cell.has-event.rec-only{
+    border-color: var(--line);
+    background: white;
+  }
+  .cell.has-event:active{ transform: scale(0.94); }
+  .cell.today-marker{ box-shadow: 0 0 0 2px var(--lavender-deep) inset; }
+
+  .cell .num{ font-family: inherit; }
+  .cell .dots{ display:flex; gap:3px; margin-top:3px; position:absolute; bottom:6px; }
+  .cell .badge{
+    position:absolute; top:3px; right:3px;
+    font-size: 8px;
+  }
+
+  .cell.vac{
+    background: var(--lavender-pale) !important;
+    color: var(--lavender-deep) !important;
+    border-color: var(--lavender-pale) !important;
+    font-size: 11px;
+  }
+
+  .cell.vac-start{
+    background: var(--lavender-deep);
+    color: white;
+    border-color: var(--lavender-deep);
+    font-size: 11px;
+  }
+
+  /* Birthday footer note */
+  .bday{
+    margin: 18px 16px 0;
+    background: white;
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    display:flex; align-items:center; gap:12px;
+    border: 1px solid var(--line);
+  }
+  .bday .icon{
+    width:38px; height:38px; border-radius:50%;
+    background: var(--coral-pale); display:flex; align-items:center; justify-content:center;
+    font-size:18px; flex-shrink:0;
+  }
+  .bday .txt{ font-size:13px; line-height:1.4; }
+  .bday .txt b{ color: var(--coral); }
+
+  .note{
+    margin: 16px 16px 0; font-size: 11.5px; color: var(--ink-soft); line-height:1.6;
+    text-align:center;
+  }
+
+  /* Bottom sheet */
+  .overlay{
+    position: fixed; inset:0; background: rgba(44,42,61,0.45);
+    opacity:0; pointer-events:none; transition: opacity 0.2s ease;
+    z-index: 50;
+  }
+  .overlay.open{ opacity:1; pointer-events:auto; }
+
+  .sheet{
+    position: fixed; left:0; right:0; bottom:0;
+    background: white;
+    border-radius: 24px 24px 0 0;
+    max-width: 480px; margin: 0 auto;
+    padding: 10px 20px 28px;
+    transform: translateY(110%);
+    transition: transform 0.28s cubic-bezier(.32,.72,0,1);
+    z-index: 51;
+    box-shadow: 0 -10px 40px rgba(44,42,61,0.2);
+    max-height: 78vh;
+    overflow-y: auto;
+  }
+  .sheet.open{ transform: translateY(0); }
+  .grabber{ width:36px; height:4px; background: var(--line); border-radius:4px; margin: 6px auto 14px; }
+
+  .sheet-date{ font-size:12px; font-weight:700; color: var(--lavender-deep); margin-bottom:4px; }
+  .sheet-title{ font-size:19px; font-weight:800; margin: 0 0 14px; line-height:1.3; }
+
+  .prep-box{
+    background: var(--lavender-pale);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .prep-box .label{ font-size:12px; font-weight:700; color: var(--lavender-deep); margin-bottom:8px; display:flex; gap:6px; align-items:center; }
+  .prep-box ul{ margin:0; padding-left: 18px; font-size: 14px; line-height: 1.7; color: var(--ink); }
+  .prep-box.aqua{ background: var(--aqua-pale); }
+  .prep-box.aqua .label{ color: #1F8C7D; }
+
+  .sheet-meta{ font-size:12.5px; color: var(--ink-soft); margin-top: 8px; line-height:1.6; }
+
+  .close-btn{
+    margin-top: 16px; width:100%; padding: 13px;
+    background: var(--lavender-deep); color:white; border:none;
+    border-radius: 14px; font-size: 14px; font-weight:700;
+    font-family: inherit;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="eyebrow">Lavender Class</div>
+    <h1>🌿 라벤더반 7월</h1>
+    <div class="sub">일정을 탭하면 준비물이 나와요</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="pre-banner">
+    <div class="title">🗓️ 6월에 미리 챙기기</div>
+    <div class="pre-item"><span>여름방학 수요조사서 제출</span><b>6/26(금)까지</b></div>
+    <div class="pre-item"><span>마모된 칫솔 교체</span><b>6/29(월)까지</b></div>
+  </div>
+
+  <div class="legend">
+    <span><i class="dot event"></i>특별 일정</span>
+    <span><i class="dot story"></i>화요일 이야기할머니</span>
+    <span><i class="dot swim"></i>수요일 무지개수영</span>
+  </div>
+
+  <div class="cal">
+    <div class="cal-head">
+      <h2>2026년 7월</h2>
+      <span>탭하여 준비물 확인</span>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <div class="bday">
+    <div class="icon">🎂</div>
+    <div class="txt">7월 생일 친구가 있어요 🎉<br>7/20(월) 생일파티 — 대상자는 알림장 참고</div>
+  </div>
+
+  <div class="note">
+    반복 일정(이야기할머니·무지개수영)은<br>담임 선생님 알림장으로 한 번 더 확인해주세요 🙏
+  </div>
+
+</div>
+
+<div class="overlay" id="overlay"></div>
+<div class="sheet" id="sheet">
+  <div class="grabber"></div>
+  <div class="sheet-date" id="sheetDate"></div>
+  <div class="sheet-title" id="sheetTitle"></div>
+  <div id="sheetBody"></div>
+  <button class="close-btn" onclick="closeSheet()">확인</button>
+</div>
+
+<script>
+const events = {
+  2:  { title: "순환자원 홍보관 방문", dow:"목", type:"event",
+        prep: ["원복 + 운동화 착용", "도보 등원 유아는 9:50까지 등원"] },
+  7:  { title: "전통문화체험", dow:"화", type:"event",
+        prep: ["한복 착용", "갈아입을 옷 지참"], recur: ["story"] },
+  8:  { title: "KYUNGHEE WATER BOMB", dow:"수", type:"event",
+        prep: ["실외물놀이가 있는 날", "준비물은 추후 안내장으로 공지 예정 (꼭 확인)"], recur: ["swim"] },
+  16: { title: "BOA STUDIO 방문", dow:"목", type:"event",
+        prep: ["장화", "썬크림", "모자"] },
+  17: { title: "제헌절", dow:"금", type:"event",
+        prep: ["정상 등원 여부 알림장으로 확인"] },
+  20: { title: "7월 생일파티", dow:"월", type:"event",
+        prep: ["생일 대상자만 확인 (알림장 참고)"] },
+  22: { title: "방학식", dow:"수", type:"event",
+        prep: ["여름방학 시작", "원내/가정돌봄 여부 미리 확인"], recur: ["swim"] },
+};
+
+// recurring-only days (no main event already covering it)
+const storyDays = [14,21];      // 매주 화요일
+const swimDays  = [1,15];       // 매주 수요일 (8,22 already have main event)
+
+storyDays.forEach(d=>{
+  events[d] = events[d] || { title:"별빛달빛 이야기 할머니", dow:"화", type:"recur", prep:["별도 준비물 없음"], recur:["story"] };
+});
+swimDays.forEach(d=>{
+  events[d] = events[d] || { title:"무지개수영", dow:"수", type:"recur", prep:["수영 준비물 (담임 선생님께 확인 권장)"], recur:["swim"] };
+});
+
+const vacationDays = {23:1,24:1,25:1,26:1,27:1,28:0,29:0,30:1}; // 23-30 원내돌봄, note 28/29 already events above take priority visually
+
+const firstDow = 3; // July 1 2026 = Wednesday (0=Sun)
+const daysInMonth = 31;
+
+const grid = document.getElementById('grid');
+['일','월','화','수','목','금','토'].forEach((d,i)=>{
+  const el = document.createElement('div');
+  el.className = 'dow' + (i===0?' sun':'') + (i===6?' sat':'');
+  el.textContent = d;
+  grid.appendChild(el);
+});
+
+for(let i=0;i<firstDow;i++){
+  const el = document.createElement('div');
+  el.className = 'cell empty';
+  grid.appendChild(el);
+}
+
+for(let day=1; day<=daysInMonth; day++){
+  const el = document.createElement('div');
+  const ev = events[day];
+  const inVac = day>=23 && day<=30;
+
+  el.className = 'cell';
+  if(inVac){ el.classList.add('vac'); }
+  if(ev){
+    el.classList.add('has-event');
+    if(ev.type === 'recur') el.classList.add('rec-only');
+  }
+
+  let dotsHtml = '';
+  if(ev && ev.recur){
+    dotsHtml = '<div class="dots">' + ev.recur.map(r => `<i class="dot ${r==='story'?'story':'swim'}"></i>`).join('') + '</div>';
+  } else if (ev && ev.type === 'event') {
+    dotsHtml = '<div class="dots"><i class="dot event"></i></div>';
+  }
+
+  el.innerHTML = inVac
+    ? `<span class="num">${day}</span><span style="font-size:9px;">돌봄</span>`
+    : (day === 31
+        ? `<span class="num">${day}</span><span style="font-size:9px;">방학시작</span>`
+        : `<span class="num">${day}</span>${dotsHtml}`);
+
+  if(day === 31){ el.classList.add('vac-start'); }
+
+  if(ev){
+    el.addEventListener('click', ()=> openSheet(day, ev));
+  }
+  grid.appendChild(el);
+}
+
+function openSheet(day, ev){
+  document.getElementById('sheetDate').textContent = `7월 ${day}일 (${ev.dow})`;
+  document.getElementById('sheetTitle').textContent = ev.title;
+
+  let recurTag = '';
+  if(ev.recur){
+    recurTag = ev.recur.includes('story')
+      ? '<div class="sheet-meta">🔁 매주 화요일 반복 일정</div>'
+      : '<div class="sheet-meta">🔁 매주 수요일 반복 일정</div>';
+  }
+
+  const boxClass = (ev.recur && ev.recur.includes('swim')) ? 'prep-box aqua' : 'prep-box';
+
+  document.getElementById('sheetBody').innerHTML = `
+    <div class="${boxClass}">
+      <div class="label">🎒 준비물 / 확인사항</div>
+      <ul>${ev.prep.map(p=>`<li>${p}</li>`).join('')}</ul>
+    </div>
+    ${recurTag}
+  `;
+
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('sheet').classList.add('open');
+}
+
+function closeSheet(){
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('sheet').classList.remove('open');
+}
+document.getElementById('overlay').addEventListener('click', closeSheet);
+</script>
+
+</body>
+</html>
